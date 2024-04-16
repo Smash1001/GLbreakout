@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\sejin\Documents\OpenGL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\sejin\Documents\OpenGL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\sejin\source\repos\OpenGLtest\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\sejin\source\repos\OpenGLtest\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -134,15 +134,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Downloads\glad\src\glad.c" />
     <ClCompile Include="window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\Documents\OpenGL\include\glad\glad.h" />
-    <ClInclude Include="..\..\..\..\Documents\OpenGL\include\GLFW\glfw3.h" />
-    <ClInclude Include="..\..\..\..\Documents\OpenGL\include\GLFW\glfw3native.h" />
-    <ClInclude Include="..\..\..\..\Documents\OpenGL\include\KHR\khrplatform.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\..\..\..\Documents\OpenGL\lib\glfw3.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
