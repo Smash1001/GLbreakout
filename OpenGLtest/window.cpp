@@ -30,7 +30,7 @@ void processInput(GLFWwindow* window)
 }
 
 
-
+/* =========================================================UNUSED=================================================
 void buffer() 
 {
     //vertex points
@@ -105,7 +105,7 @@ void shader()
     glDeleteShader(fragmentShader);
 
 }
-
+*/
 
 
 
@@ -119,7 +119,7 @@ int main()
 
 
 
-    //create window
+    /*--------------------------------------------create window--------------------------------------------*/
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
@@ -140,7 +140,7 @@ int main()
     }
 
 
-    //build shaders
+    /*--------------------------------------------build shaders--------------------------------------------*/
     //vertex shader
     unsigned int shaderProgram = glCreateProgram();
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -185,7 +185,7 @@ int main()
 
 
 
-    //set up vertices and buffers
+    /*--------------------------------------------set up vertices and buffers--------------------------------------------*/
     //vertex points
     float vertices[] = {
         -0.5f, -0.5f, 0.0f,
@@ -194,7 +194,8 @@ int main()
     };
 
     //vertex buffer
-    unsigned int VBO, VAO;
+    unsigned int VBO; //vertex buffer object
+    unsigned int VAO; //vertex array object
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -212,7 +213,7 @@ int main()
 
 
 
-    //render loop
+    /*--------------------------------------------render loop--------------------------------------------*/
     while (!glfwWindowShouldClose(window))
     {
         //input
@@ -233,6 +234,7 @@ int main()
         glfwPollEvents();
     }
 
+    //delete pointers
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);
