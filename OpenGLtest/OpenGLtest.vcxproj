@@ -24,6 +24,7 @@
     <ProjectGuid>{7ac3b2c5-fdc9-4012-a81a-3cabf3b51c91}</ProjectGuid>
     <RootNamespace>OpenGLtest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Breakout</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -71,8 +72,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\sejin\source\repos\OpenGLtest\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\sejin\source\repos\OpenGLtest\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\sejin\source\repos\GLbreakout\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\sejin\source\repos\GLbreakout\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -133,7 +134,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
-    <ClCompile Include="window.cpp" />
+    <ClCompile Include="breakout.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="game.h" />
+    <ClInclude Include="shader.h" />
+    <ClInclude Include="texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
