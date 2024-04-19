@@ -135,6 +135,8 @@
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
     <ClCompile Include="breakout.cpp" />
+    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
