@@ -220,7 +220,7 @@ int main()
         processInput(window);
 
         //rendering commands
-        //makes a blue-green screen
+    /*   //makes a blue-green screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -231,13 +231,13 @@ int main()
 
         //check and call events and swap buffers
         glfwSwapBuffers(window);
-        glfwPollEvents();
+        glfwPollEvents();*/
     }
 
     //delete pointers
-    glDeleteVertexArrays(1, &VAO);
+    /*glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
+    glDeleteProgram(shaderProgram);*/
 
     glfwTerminate();
     return 0;
