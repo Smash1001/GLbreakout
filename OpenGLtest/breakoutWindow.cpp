@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #include "game.h"
-#include "resource_manager.h"
+#include "resourceManager.h"
 
 #include <iostream>
 
