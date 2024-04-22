@@ -134,8 +134,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
-    <ClCompile Include="game.cpp" />
+    <ClCompile Include="ball_object.cpp" />
     <ClCompile Include="breakoutWindow.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="game_level.cpp" />
+    <ClCompile Include="game_object.cpp" />
     <ClCompile Include="resourceManager.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="sprite_renderer.cpp" />
@@ -143,7 +146,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\stb_image.h" />
+    <ClInclude Include="ball_object.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="game_level.h" />
+    <ClInclude Include="game_object.h" />
     <ClInclude Include="resourceManager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="sprite_renderer.h" />

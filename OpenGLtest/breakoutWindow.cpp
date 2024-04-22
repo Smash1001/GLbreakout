@@ -99,6 +99,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
@@ -112,6 +114,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             Breakout.Keys[key] = false;
     }
 }
+
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
