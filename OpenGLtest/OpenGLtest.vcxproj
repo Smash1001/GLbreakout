@@ -138,6 +138,7 @@
     <ClCompile Include="breakoutWindow.cpp" />
     <ClCompile Include="resourceManager.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="sprite_renderer.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="resourceManager.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="sprite_renderer.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
