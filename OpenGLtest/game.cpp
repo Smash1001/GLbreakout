@@ -48,18 +48,18 @@ void Game::Init()
     myShader = ResourceManager::GetShader("sprite");
     Renderer = new SpriteRenderer(myShader);
     // load textures
-    ResourceManager::LoadTexture("textures/background.jpg", false, "background");
-    ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
-    ResourceManager::LoadTexture("textures/block.png", false, "block");
-    ResourceManager::LoadTexture("textures/block_solid.png", false, "block_solid");
-    ResourceManager::LoadTexture("textures/paddle.png", true, "paddle");
+    ResourceManager::LoadTexture("textures/background3.jpg", true, "background");
+    ResourceManager::LoadTexture("textures/ball3.png", true, "face");
+    ResourceManager::LoadTexture("textures/block3.png", false, "block");
+    ResourceManager::LoadTexture("textures/block_solid3.png", false, "block_solid");
+    ResourceManager::LoadTexture("textures/paddle3.png", true, "paddle");
     // load levels
-    GameLevel one; one.Load("levels/one.lvl", this->Width, this->Height / 2);
-    GameLevel two; two.Load("levels/two.lvl", this->Width, this->Height / 2);
-    GameLevel three; three.Load("levels/three.lvl", this->Width, this->Height / 2);
-    GameLevel four; four.Load("levels/four.lvl", this->Width, this->Height / 2);
-    this->Levels.push_back(one);
+    GameLevel one; one.Load("levels/one.txt", this->Width, this->Height / 2);
+    GameLevel two; two.Load("levels/two.txt", this->Width, this->Height / 2);
+    GameLevel three; three.Load("levels/three.txt", this->Width, this->Height / 2);
+    GameLevel four; four.Load("levels/four.txt", this->Width, this->Height / 2);
     this->Levels.push_back(two);
+    this->Levels.push_back(one);
     this->Levels.push_back(three);
     this->Levels.push_back(four);
     this->Level = 0;
@@ -72,18 +72,23 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    Ball->Move(dt, this->Width);
-    // check for collisions
-    this->DoCollisions();
+    if (this->State != GAME_PAUSE) {
+        Ball->Move(dt, this->Width);
+        // check for collisions
+        this->DoCollisions();
+    }
+    
 }
 
 void Game::ProcessInput(float dt)
 {
+    // when game is active
     if (this->State == GAME_ACTIVE)
     {
+        bool once = false;
         float velocity = PLAYER_VELOCITY * dt;
         // move playerboard
-        if (this->Keys[GLFW_KEY_A])
+        if (this->Keys[GLFW_KEY_LEFT])
         {
             if (Player->Position.x >= 0.0f) 
             {
@@ -92,7 +97,7 @@ void Game::ProcessInput(float dt)
                     Ball->Position.x -= velocity;
             }
         }
-        if (this->Keys[GLFW_KEY_D])
+        if (this->Keys[GLFW_KEY_RIGHT])
         {
             if (Player->Position.x <= this->Width - Player->Size.x) 
             {
@@ -101,14 +106,40 @@ void Game::ProcessInput(float dt)
                     Ball->Position.x += velocity;
             }
         }
-        if (this->Keys[GLFW_KEY_SPACE])
+        if (this->Keys[GLFW_KEY_SPACE]) 
+        {
             Ball->Stuck = false;
+        }
+        if (this->Keys[GLFW_KEY_Z]) 
+        {
+            this->State = GAME_PAUSE;
+            this->Keys[GLFW_KEY_Z] = false;
+        }
+    }
+
+    //when game is paused
+    if (this->State == GAME_PAUSE) 
+    {
+        if (this->Keys[GLFW_KEY_Z]) {
+            this->State = GAME_ACTIVE;
+            this->Keys[GLFW_KEY_Z] = false;
+        }
+    }
+
+    //item select and menu
+    if (this->State == GAME_MENU) {
+        if (this->Keys[GLFW_KEY_LEFT]) {
+
+        }
+        if (this->Keys[GLFW_KEY_RIGHT]) {
+
+        }
     }
 }
 
 void Game::Render()
 {
-    if (this->State == GAME_ACTIVE)
+    if (this->State == GAME_ACTIVE || this->State == GAME_PAUSE)
     {
         // draw background
         Texture2D texture;
@@ -244,13 +275,13 @@ Direction VectorDirection(glm::vec2 target)
 void Game::ResetLevel()
 {
     if (this->Level == 0)
-        this->Levels[0].Load("levels/one.lvl", this->Width, this->Height / 2);
+        this->Levels[0].Load("levels/one.txt", this->Width, this->Height / 2);
     else if (this->Level == 1)
-        this->Levels[1].Load("levels/two.lvl", this->Width, this->Height / 2);
+        this->Levels[1].Load("levels/two.txt", this->Width, this->Height / 2);
     else if (this->Level == 2)
-        this->Levels[2].Load("levels/three.lvl", this->Width, this->Height / 2);
+        this->Levels[2].Load("levels/three.txt", this->Width, this->Height / 2);
     else if (this->Level == 3)
-        this->Levels[3].Load("levels/four.lvl", this->Width, this->Height / 2);
+        this->Levels[3].Load("levels/four.txt", this->Width, this->Height / 2);
 }
 
 void Game::ResetPlayer()

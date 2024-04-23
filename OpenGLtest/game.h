@@ -3,6 +3,9 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <chrono>
+#include <thread>
+#include <time.h>
 
 #include "game_level.h"
 
@@ -10,7 +13,8 @@
 enum GameState {
     GAME_ACTIVE,
     GAME_MENU,
-    GAME_WIN
+    GAME_WIN,
+    GAME_PAUSE
 };
 
 // Represents the four possible (collision) directions
