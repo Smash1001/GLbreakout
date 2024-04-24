@@ -23,7 +23,7 @@ GameObject* Player;
 BallObject* Ball;
 
 Game::Game(unsigned int width, unsigned int height)
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
+    : State(GAME_START), Keys(), Width(width), Height(height) //game starts as GAME_START
 {
 
 }
@@ -72,7 +72,7 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    if (this->State != GAME_PAUSE) {
+    if (this->State == GAME_ACTIVE) {
         Ball->Move(dt, this->Width);
         // check for collisions
         this->DoCollisions();
@@ -82,6 +82,13 @@ void Game::Update(float dt)
 
 void Game::ProcessInput(float dt)
 {
+    // when game is started
+    if (this->State == GAME_START) {
+        if (this->Keys[GLFW_KEY_SPACE]) { //press space to start game
+            this->State = GAME_ACTIVE;
+            this->Keys[GLFW_KEY_SPACE] = false;
+        }
+    }
     // when game is active
     if (this->State == GAME_ACTIVE)
     {
@@ -110,7 +117,7 @@ void Game::ProcessInput(float dt)
         {
             Ball->Stuck = false;
         }
-        if (this->Keys[GLFW_KEY_Z]) 
+        if (this->Keys[GLFW_KEY_Z]) //press z to pause
         {
             this->State = GAME_PAUSE;
             this->Keys[GLFW_KEY_Z] = false;
