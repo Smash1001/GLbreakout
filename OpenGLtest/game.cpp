@@ -11,6 +11,7 @@
 #include "sprite_renderer.h"
 #include "game_object.h"
 #include "ball_object.h"
+#include "text_renderer.h"
 
 // Initial velocity of the Ball
 //const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
@@ -21,6 +22,7 @@
 SpriteRenderer* Renderer;
 GameObject* Player;
 BallObject* Ball;
+TextRenderer* Text;
 
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_START), Keys(), Width(width), Height(height) //game starts as GAME_START
@@ -32,6 +34,8 @@ Game::~Game()
 {
     delete Renderer;
     delete Player;
+    delete Ball;
+    delete Text;
 }
 
 void Game::Init()
@@ -47,6 +51,8 @@ void Game::Init()
     Shader myShader;
     myShader = ResourceManager::GetShader("sprite");
     Renderer = new SpriteRenderer(myShader);
+    Text = new TextRenderer(this->Width, this->Height);
+    Text->Load("fonts/ocraext.TTF", 24);
     // load textures
     ResourceManager::LoadTexture("textures/background3.jpg", true, "background");
     ResourceManager::LoadTexture("textures/ball3.png", true, "face");
@@ -158,6 +164,8 @@ void Game::Render()
         Player->Draw(*Renderer);
         // draw ball
         Ball->Draw(*Renderer);
+        // draw text
+        Text->RenderText("Some text", 250.0f, this->Height / 2.0f, 1.0f);
     }
 }
 
