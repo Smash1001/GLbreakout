@@ -20,7 +20,7 @@
 TextRenderer::TextRenderer(unsigned int width, unsigned int height)
 {
     // load and configure shader
-    this->TextShader = ResourceManager::LoadShader("text_2d.vs", "text_2d.fs", nullptr, "text");
+    this->TextShader = ResourceManager::LoadShader("shaders/text2d.vs", "shaders/text2d.frag", nullptr, "text");
     this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
     this->TextShader.SetInteger("text", 0);
     // configure VAO/VBO for texture quads
@@ -111,7 +111,7 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale, g
         Character ch = Characters[*c];
 
         float xpos = x + ch.Bearing.x * scale;
-        float ypos = y + (this->Characters['H'].Bearing.y - ch.Bearing.y) * scale;
+        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
 
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;

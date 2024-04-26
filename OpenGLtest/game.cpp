@@ -6,6 +6,10 @@
 ** Creative Commons, either version 4 of the License, or (at your
 ** option) any later version.
 ******************************************************************/
+#include <algorithm>
+#include <sstream>
+#include <iostream>
+
 #include "game.h"
 #include "resourceManager.h"
 #include "sprite_renderer.h"
@@ -17,6 +21,11 @@
 //const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
 // Radius of the ball object
 //const float BALL_RADIUS = 12.5f;
+
+// The Width of the screen
+const unsigned int SCREEN_WIDTH = 800;
+// The height of the screen
+const unsigned int SCREEN_HEIGHT = 600;
 
 // Game-related State data
 SpriteRenderer* Renderer;
@@ -43,8 +52,7 @@ void Game::Init()
     // load shaders
     ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.frag", nullptr, "sprite");
     // configure shaders
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
-        static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width), static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
     // set render-specific controls
@@ -52,7 +60,7 @@ void Game::Init()
     myShader = ResourceManager::GetShader("sprite");
     Renderer = new SpriteRenderer(myShader);
     Text = new TextRenderer(this->Width, this->Height);
-    Text->Load("fonts/ocraext.TTF", 24);
+    Text->Load("fonts/SuperMario256.ttf", 24);
     // load textures
     ResourceManager::LoadTexture("textures/background3.jpg", true, "background");
     ResourceManager::LoadTexture("textures/ball3.png", true, "face");
@@ -152,6 +160,13 @@ void Game::ProcessInput(float dt)
 
 void Game::Render()
 {
+    // draw title (increasing denominator moves left, moves up)
+    Text->RenderText("Controls", SCREEN_WIDTH / 2.5f, SCREEN_HEIGHT / 30.0f, 1.0f);
+    Text->RenderText("Z - pause game      space - serve ball", SCREEN_WIDTH / 7.0f, SCREEN_HEIGHT / 10.0f, 1.0f);
+    Text->RenderText("Ultra Cool Hyperspace Breakout", SCREEN_WIDTH / 5.0f, SCREEN_HEIGHT / 2.6f, 1.0f);
+    Text->RenderText("(Press space to play)", SCREEN_WIDTH / 3.4f, SCREEN_HEIGHT / 1.9f, 1.0f);
+    Text->RenderText("2024 Julian Lee and Adam Bowen", SCREEN_WIDTH / 5.0f, SCREEN_HEIGHT / 1.1f, 1.0f);
+
     if (this->State == GAME_ACTIVE || this->State == GAME_PAUSE)
     {
         // draw background
@@ -165,7 +180,7 @@ void Game::Render()
         // draw ball
         Ball->Draw(*Renderer);
         // draw text
-        Text->RenderText("Some text", 250.0f, this->Height / 2.0f, 1.0f);
+        Text->RenderText("Score", 250.0f, this->Height / 2.0f, 1.0f);
     }
 }
 
