@@ -11,8 +11,7 @@
 #include <fstream>
 #include <sstream>
 
-
-void GameLevel::Load(const char* file, unsigned int levelWidth, unsigned int levelHeight)
+void GameLevel::Load(const char* file, unsigned int levelWidth, unsigned int levelHeight, std::string block, std::string solid)
 {
     // clear old data
     this->Bricks.clear();
@@ -33,7 +32,7 @@ void GameLevel::Load(const char* file, unsigned int levelWidth, unsigned int lev
             tileData.push_back(row);
         }
         if (tileData.size() > 0)
-            this->init(tileData, levelWidth, levelHeight);
+            this->init(tileData, levelWidth, levelHeight, block, solid);
     }
 }
 
@@ -52,7 +51,7 @@ bool GameLevel::IsCompleted()
     return true;
 }
 
-void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned int levelWidth, unsigned int levelHeight)
+void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned int levelWidth, unsigned int levelHeight, std::string block, std::string solid)
 {
     // calculate dimensions
     unsigned int height = tileData.size();
@@ -68,7 +67,7 @@ void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned i
             {
                 glm::vec2 pos(unit_width * x, unit_height * y);
                 glm::vec2 size(unit_width, unit_height);
-                GameObject obj(pos, size, ResourceManager::GetTexture("block_solid"), glm::vec3(0.8f, 0.8f, 0.7f));
+                GameObject obj(pos, size, ResourceManager::GetTexture(solid), glm::vec3(0.8f, 0.8f, 0.7f));
                 obj.IsSolid = true;
                 this->Bricks.push_back(obj);
             }
@@ -86,7 +85,7 @@ void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned i
 
                 glm::vec2 pos(unit_width * x, unit_height * y);
                 glm::vec2 size(unit_width, unit_height);
-                this->Bricks.push_back(GameObject(pos, size, ResourceManager::GetTexture("block"), color));
+                this->Bricks.push_back(GameObject(pos, size, ResourceManager::GetTexture(block), color));
             }
         }
     }

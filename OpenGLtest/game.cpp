@@ -22,10 +22,13 @@
 // Radius of the ball object
 //const float BALL_RADIUS = 12.5f;
 
-// The Width of the screen
-const unsigned int SCREEN_WIDTH = 800;
-// The height of the screen
-const unsigned int SCREEN_HEIGHT = 600;
+// Values to determine elements to be used
+std::string paddleNum = "";
+std::string ballNum = "";
+std::string blocksNum = "";
+std::string solidNum = "";
+std::string backgroundNum = "";
+unsigned int menuPart = 1;
 
 // Game-related State data
 SpriteRenderer* Renderer;
@@ -62,21 +65,22 @@ void Game::Init()
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load("fonts/SuperMario256.ttf", 24);
     // load textures
-    ResourceManager::LoadTexture("textures/background3.jpg", true, "background");
-    ResourceManager::LoadTexture("textures/ball3.png", true, "face");
-    ResourceManager::LoadTexture("textures/block3.png", false, "block");
-    ResourceManager::LoadTexture("textures/block_solid3.png", false, "block_solid");
-    ResourceManager::LoadTexture("textures/paddle3.png", true, "paddle");
-    // load levels
-    GameLevel one; one.Load("levels/one.txt", this->Width, this->Height / 2);
-    GameLevel two; two.Load("levels/two.txt", this->Width, this->Height / 2);
-    GameLevel three; three.Load("levels/three.txt", this->Width, this->Height / 2);
-    GameLevel four; four.Load("levels/four.txt", this->Width, this->Height / 2);
-    this->Levels.push_back(two);
-    this->Levels.push_back(one);
-    this->Levels.push_back(three);
-    this->Levels.push_back(four);
-    this->Level = 0;
+    ResourceManager::LoadTexture("textures/background2.jpg", true, "background");
+    ResourceManager::LoadTexture("textures/background3.jpg", true, "background2");
+    ResourceManager::LoadTexture("textures/background4.jpg", true, "background3");
+    ResourceManager::LoadTexture("textures/ball.png", true, "face");
+    ResourceManager::LoadTexture("textures/ball2.png", true, "face2");
+    ResourceManager::LoadTexture("textures/ball3.png", true, "face3");
+    ResourceManager::LoadTexture("textures/block.png", false, "block");
+    ResourceManager::LoadTexture("textures/block2.png", false, "block2");
+    ResourceManager::LoadTexture("textures/block3.png", false, "block3");
+    ResourceManager::LoadTexture("textures/block_solid.png", false, "block_solid");
+    ResourceManager::LoadTexture("textures/block_solid2.png", false, "block_solid2");
+    ResourceManager::LoadTexture("textures/block_solid3.png", false, "block_solid3");
+    ResourceManager::LoadTexture("textures/paddle.png", true, "paddle");
+    ResourceManager::LoadTexture("textures/paddle2.png", true, "paddle2");
+    ResourceManager::LoadTexture("textures/paddle3.png", true, "paddle3");
+
     // configure game objects
     glm::vec2 playerPos = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
     Player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture("paddle"));
@@ -90,6 +94,16 @@ void Game::Update(float dt)
         Ball->Move(dt, this->Width);
         // check for collisions
         this->DoCollisions();
+
+        if (Ball->Position.y >= this->Height) 
+        {
+            this->lifeNum--;
+            if (this->lifeNum == 0) {
+                this->ResetLevel();
+                this->State = GAME_MENU;
+            }
+            this->ResetPlayer();
+        }
     }
     
 }
@@ -99,7 +113,7 @@ void Game::ProcessInput(float dt)
     // when game is started
     if (this->State == GAME_START) {
         if (this->Keys[GLFW_KEY_SPACE]) { //press space to start game
-            this->State = GAME_ACTIVE;
+            this->State = GAME_MENU;
             this->Keys[GLFW_KEY_SPACE] = false;
         }
     }
@@ -149,23 +163,89 @@ void Game::ProcessInput(float dt)
 
     //item select and menu
     if (this->State == GAME_MENU) {
-        if (this->Keys[GLFW_KEY_LEFT]) {
-
+        if (this->Keys[GLFW_KEY_1] && menuPart == 1) {
+            paddleNum = "paddle";
+            this->Keys[GLFW_KEY_1] = false;
+            menuPart++;
         }
-        if (this->Keys[GLFW_KEY_RIGHT]) {
+        if (this->Keys[GLFW_KEY_2] && menuPart == 1) {
+            paddleNum = "paddle2";
+            this->Keys[GLFW_KEY_2] = false;
+            menuPart++;
+        }
+        if (this->Keys[GLFW_KEY_3] && menuPart == 1) {
+            paddleNum = "paddle3";
+            this->Keys[GLFW_KEY_3] = false;
+            menuPart++;
+        }
+        if (this->Keys[GLFW_KEY_1] && menuPart == 2) {
+            ballNum = "face";
+            this->Keys[GLFW_KEY_1] = false;
+            menuPart++;
+        }
+        if (this->Keys[GLFW_KEY_2] && menuPart == 2) {
+            ballNum = "face2";
+            this->Keys[GLFW_KEY_2] = false;
+            menuPart++;
+        }
+        if (this->Keys[GLFW_KEY_3] && menuPart == 2) {
+            ballNum = "face3";
+            this->Keys[GLFW_KEY_3] = false;
+            menuPart++;
+        }
+        if (this->Keys[GLFW_KEY_1] && menuPart == 3) {
+            blocksNum = "block";
+            solidNum = "block_solid";
+            this->Keys[GLFW_KEY_1] = false;
+            menuPart++;
+        }
+        if (this->Keys[GLFW_KEY_2] && menuPart == 3) {
+            blocksNum = "block2";
+            solidNum = "block_solid2";
+            this->Keys[GLFW_KEY_2] = false;
+            menuPart++;
+        }
+        if (this->Keys[GLFW_KEY_3] && menuPart == 3) {
+            blocksNum = "block3";
+            solidNum = "block_solid3";
+            this->Keys[GLFW_KEY_3] = false;
+            menuPart++;
+        }
+        if (menuPart == 4) {
+            delete Player;
+            delete Ball;
+            glm::vec2 playerPos = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
+            Player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture(paddleNum));
+            glm::vec2 ballPos = playerPos + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS, -BALL_RADIUS * 2.0f);
+            Ball = new BallObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY, ResourceManager::GetTexture(ballNum));
 
+            // load levels
+            GameLevel one; one.Load("levels/one.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+            GameLevel two; two.Load("levels/two.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+            GameLevel three; three.Load("levels/three.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+            GameLevel four; four.Load("levels/four.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+            this->Levels.push_back(two);
+            this->Levels.push_back(one);
+            this->Levels.push_back(three);
+            this->Levels.push_back(four);
+            this->Level = 0;
+
+            this->State = GAME_ACTIVE;
         }
     }
 }
 
 void Game::Render()
 {
-    // draw title (increasing denominator moves left, moves up)
-    Text->RenderText("Controls", SCREEN_WIDTH / 2.5f, SCREEN_HEIGHT / 30.0f, 1.0f);
-    Text->RenderText("Z - pause game      space - serve ball", SCREEN_WIDTH / 7.0f, SCREEN_HEIGHT / 10.0f, 1.0f);
-    Text->RenderText("Ultra Cool Hyperspace Breakout", SCREEN_WIDTH / 5.0f, SCREEN_HEIGHT / 2.6f, 1.0f);
-    Text->RenderText("(Press space to play)", SCREEN_WIDTH / 3.4f, SCREEN_HEIGHT / 1.9f, 1.0f);
-    Text->RenderText("2024 Julian Lee and Adam Bowen", SCREEN_WIDTH / 5.0f, SCREEN_HEIGHT / 1.1f, 1.0f);
+    if (this->State == GAME_START) 
+    {
+        // draw title (increasing denominator moves left, moves up)
+        Text->RenderText("Controls", this->Width / 2.5f, this->Height / 30.0f, 1.0f);
+        Text->RenderText("Z - pause game      space - serve ball", this->Width / 7.0f, this->Height / 10.0f, 1.0f);
+        Text->RenderText("Ultra Cool Hyperspace Breakout", this->Width / 5.0f, this->Height / 2.6f, 1.0f);
+        Text->RenderText("(Press space to play)", this->Width / 3.4f, this->Height / 1.9f, 1.0f);
+        Text->RenderText("2024 Julian Lee and Adam Bowen", this->Width / 5.0f, this->Height / 1.1f, 1.0f);
+    }
 
     if (this->State == GAME_ACTIVE || this->State == GAME_PAUSE)
     {
@@ -179,8 +259,51 @@ void Game::Render()
         Player->Draw(*Renderer);
         // draw ball
         Ball->Draw(*Renderer);
-        // draw text
-        Text->RenderText("Score", 250.0f, this->Height / 2.0f, 1.0f);
+        // draw UI
+        Text->RenderText("Score", this->Width / 30.0f, this->Height / 30.0f, 1.0f);
+        Text->RenderText("Lives", this->Width / 1.2f + 10, this->Height / 30.0f, 1.0f);
+        Text->RenderText(life, this->Width / 1.2f + 100, this->Height / 30.0f, 1.0f);
+    }
+
+    if (this->State == GAME_MENU) 
+    {
+        if (menuPart == 1) 
+        {
+            //increasing denominator moves left (WIDTH), moves up (HEIGHT)
+            Texture2D paddle, paddle2, paddle3;
+            Text->RenderText("Select a paddle", this->Width / 3.0f, this->Height / 3.6f, 1.0f);
+            Text->RenderText("1                  2                   3", this->Width / 5.0f, this->Height / 1.5f, 1.0f);
+            paddle = ResourceManager::GetTexture("paddle");
+            paddle2 = ResourceManager::GetTexture("paddle2");
+            paddle3 = ResourceManager::GetTexture("paddle3");
+            Renderer->DrawSprite(paddle, glm::vec2(this->Width / 7.0f, this->Height / 2.0f), PLAYER_SIZE, 0.0f);
+            Renderer->DrawSprite(paddle2, glm::vec2(this->Width / 2.3f, this->Height / 2.0f), PLAYER_SIZE, 0.0f);
+            Renderer->DrawSprite(paddle3, glm::vec2(this->Width / 1.35f, this->Height / 2.0f), PLAYER_SIZE, 0.0f);
+        }
+        if (menuPart == 2) 
+        {
+            Texture2D ball, ball2, ball3;
+            Text->RenderText("Select a ball", this->Width / 3.0f, this->Height / 3.6f, 1.0f);
+            Text->RenderText("1                  2                   3", this->Width / 5.0f, this->Height / 1.5f, 1.0f);
+            ball = ResourceManager::GetTexture("face");
+            ball2 = ResourceManager::GetTexture("face2");
+            ball3 = ResourceManager::GetTexture("face3");
+            Renderer->DrawSprite(ball, glm::vec2(this->Width / 7.0f + 30, this->Height / 2.0f), glm::vec2(BALL_RADIUS * 4.0f, BALL_RADIUS * 4.0f), 0.0f);
+            Renderer->DrawSprite(ball2, glm::vec2(this->Width / 2.3f + 30, this->Height / 2.0f), glm::vec2(BALL_RADIUS * 4.0f, BALL_RADIUS * 4.0f), 0.0f);
+            Renderer->DrawSprite(ball3, glm::vec2(this->Width / 1.35f + 30, this->Height / 2.0f), glm::vec2(BALL_RADIUS * 4.0f, BALL_RADIUS * 4.0f), 0.0f);
+        }
+        if (menuPart == 3) 
+        {
+            Texture2D block, block2, block3;
+            Text->RenderText("Select block type", this->Width / 3.0f, this->Height / 3.6f, 1.0f);
+            Text->RenderText("1                  2                   3", this->Width / 5.0f, this->Height / 1.5f, 1.0f);
+            block = ResourceManager::GetTexture("block");
+            block2 = ResourceManager::GetTexture("block2");
+            block3 = ResourceManager::GetTexture("block3");
+            Renderer->DrawSprite(block, glm::vec2(this->Width / 7.0f + 20, this->Height / 2.0f), glm::vec2(20.0f * 4.0f, 20.0f * 4.0f), 0.0f);
+            Renderer->DrawSprite(block2, glm::vec2(this->Width / 2.3f + 20, this->Height / 2.0f), glm::vec2(20.0f * 4.0f, 20.0f * 4.0f), 0.0f);
+            Renderer->DrawSprite(block3, glm::vec2(this->Width / 1.35f + 20, this->Height / 2.0f), glm::vec2(20.0f * 4.0f, 20.0f * 4.0f), 0.0f);
+        }
     }
 }
 
@@ -305,13 +428,13 @@ Direction VectorDirection(glm::vec2 target)
 void Game::ResetLevel()
 {
     if (this->Level == 0)
-        this->Levels[0].Load("levels/one.txt", this->Width, this->Height / 2);
+        this->Levels[0].Load("levels/one.txt", this->Width, this->Height / 2, blocksNum, solidNum);
     else if (this->Level == 1)
-        this->Levels[1].Load("levels/two.txt", this->Width, this->Height / 2);
+        this->Levels[1].Load("levels/two.txt", this->Width, this->Height / 2, blocksNum, solidNum);
     else if (this->Level == 2)
-        this->Levels[2].Load("levels/three.txt", this->Width, this->Height / 2);
+        this->Levels[2].Load("levels/three.txt", this->Width, this->Height / 2, blocksNum, solidNum);
     else if (this->Level == 3)
-        this->Levels[3].Load("levels/four.txt", this->Width, this->Height / 2);
+        this->Levels[3].Load("levels/four.txt", this->Width, this->Height / 2, blocksNum, solidNum);
 }
 
 void Game::ResetPlayer()

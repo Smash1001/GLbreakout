@@ -53,6 +53,8 @@ public:
     unsigned int            Width, Height;
     std::vector<GameLevel>  Levels;
     unsigned int            Level;
+    std::string             life = "3";
+    unsigned int            lifeNum = 3;
     // constructor/destructor
     Game(unsigned int width, unsigned int height);
     ~Game();
