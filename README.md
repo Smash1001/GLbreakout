@@ -1,10 +1,14 @@
-Set include and library directories in VC++ directories to the include and lib folders respectively for VS 22.
+Our project is built to use Visual Studio 2022 on Windows.
 
-Add 'glfw3.lib' 'opengl32.lib' and 'freetype.lib' to addtional dependencies in linker settings.
+Set include and library directories in 'VC++ directories' in the solution's 'property pages' to the 'include' and 'lib' folders respectively.
 
-https://learnopengl.com/In-Practice/2D-Game/Breakout on how to do breakout. Make sure to include glad.c in same directory as cpp file.
+(Alternatively, include folder contents to user's include and library directories)
 
+Add 'glfw3.lib' 'opengl32.lib' and 'freetype.lib' to 'addtional dependencies' under the 'linker' settings.
 
+Make sure to include glad.c in the solution.
+
+Make sure 'freetype.dll' is included in Windows' 'System32' folder, if not, it is provided in the repo.
 
 Dependencies:
 
