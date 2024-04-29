@@ -1,19 +1,13 @@
-#include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <fstream>
-#include <iomanip>
-#include <string>
+#include "lvlGen.h"
 
 // Function to generate a random number between min and max (inclusive)
-int getRandomNumber(int min, int max)
+int lvlGen::getRandomNumber(int min, int max)
 {
     return rand() % (max - min + 1) + min;
 }
 
 // Function to check if a cell is valid for placing a 1
-bool isValidCell(const std::vector<std::vector<int>> &matrix, int row, int col)
+bool lvlGen::isValidCell(const std::vector<std::vector<int>> &matrix, int row, int col)
 {
     // Check if the cell is out of bounds or if it already contains a 1
     if (row < 0 || row >= matrix.size() || col < 0 || col >= matrix[0].size() || matrix[row][col] == 1)
@@ -35,7 +29,7 @@ bool isValidCell(const std::vector<std::vector<int>> &matrix, int row, int col)
 }
 
 // Function to generate the matrix
-std::vector<std::vector<int>> generateMatrix(int height, int width)
+std::vector<std::vector<int>> lvlGen::generateMatrix(int height, int width)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
 
@@ -75,7 +69,7 @@ std::vector<std::vector<int>> generateMatrix(int height, int width)
 }
 
 // Function to write the matrix to a file with spaces between numbers
-void writeMatrixToFile(const std::vector<std::vector<int>> &matrix, const std::string &filename)
+void lvlGen::writeMatrixToFile(const std::vector<std::vector<int>> &matrix, const std::string &filename)
 {
     std::ofstream file(filename);
     if (file.is_open())
@@ -101,7 +95,7 @@ void writeMatrixToFile(const std::vector<std::vector<int>> &matrix, const std::s
     }
 }
 
-int main()
+void lvlGen::makeRand()
 {
     const int numLevels = 4; // Number of levels to create
 
@@ -118,5 +112,4 @@ int main()
         writeMatrixToFile(matrix, filename);
     }
 
-    return 0;
 }

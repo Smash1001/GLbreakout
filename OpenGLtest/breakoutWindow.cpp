@@ -106,6 +106,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if ((Breakout.State == GAME_LOSE || Breakout.State == GAME_WIN) && key == GLFW_KEY_N && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)

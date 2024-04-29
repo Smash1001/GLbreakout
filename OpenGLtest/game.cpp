@@ -1,14 +1,7 @@
-/*******************************************************************
-** This code is part of Breakout.
-**
-** Breakout is free software: you can redistribute it and/or modify
-** it under the terms of the CC BY 4.0 license as published by
-** Creative Commons, either version 4 of the License, or (at your
-** option) any later version.
-******************************************************************/
 #include <algorithm>
 #include <sstream>
 #include <iostream>
+#include <string>
 
 #include "game.h"
 #include "resourceManager.h"
@@ -16,18 +9,14 @@
 #include "game_object.h"
 #include "ball_object.h"
 #include "text_renderer.h"
-
-// Initial velocity of the Ball
-//const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
-// Radius of the ball object
-//const float BALL_RADIUS = 12.5f;
+#include "lvlGen.h"
 
 // Values to determine elements to be used
 std::string paddleNum = "";
 std::string ballNum = "";
 std::string blocksNum = "";
 std::string solidNum = "";
-std::string backgroundNum = "";
+std::string backgroundNum = "background";
 unsigned int menuPart = 1;
 
 // Game-related State data
@@ -50,6 +39,7 @@ Game::~Game()
     delete Text;
 }
 
+//---------------------------------------------------Initializes game on boot---------------------------------------------------
 void Game::Init()
 {
     // load shaders
@@ -80,6 +70,7 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/paddle.png", true, "paddle");
     ResourceManager::LoadTexture("textures/paddle2.png", true, "paddle2");
     ResourceManager::LoadTexture("textures/paddle3.png", true, "paddle3");
+    ResourceManager::LoadTexture("textures/winner.png", false, "winner");
 
     // configure game objects
     glm::vec2 playerPos = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
@@ -88,6 +79,7 @@ void Game::Init()
     Ball = new BallObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY, ResourceManager::GetTexture("face"));
 }
 
+//Updates game state
 void Game::Update(float dt)
 {
     if (this->State == GAME_ACTIVE) {
@@ -95,19 +87,49 @@ void Game::Update(float dt)
         // check for collisions
         this->DoCollisions();
 
+        //lose life when ball falls under window
         if (Ball->Position.y >= this->Height) 
         {
             this->lifeNum--;
+            life = std::to_string(lifeNum);
             if (this->lifeNum == 0) {
                 this->ResetLevel();
-                this->State = GAME_MENU;
+                this->State = GAME_LOSE;
             }
             this->ResetPlayer();
         }
+
+        // next level when there are no more bricks
+        if (this->Levels[this->Level].bricksLeft == 0) 
+        {
+            this->State = LEVEL_OVER;
+        }
+        if (Level > 2)
+        {
+            this->State = GAME_WIN;
+        }
+
+
+    }
+
+    if (this->State == LEVEL_OVER) 
+    {
+        this->Level++;
+        this->ResetPlayer();
+        this->State = GAME_ACTIVE;
+    }
+
+    if (this->State == GAME_WIN)
+    {
+
     }
     
 }
 
+
+
+
+//------------------------------------------------Game inputs--------------------------------------------------------------
 void Game::ProcessInput(float dt)
 {
     // when game is started
@@ -141,7 +163,7 @@ void Game::ProcessInput(float dt)
                     Ball->Position.x += velocity;
             }
         }
-        if (this->Keys[GLFW_KEY_SPACE]) 
+        if (this->Keys[GLFW_KEY_SPACE])  //press space to serve
         {
             Ball->Stuck = false;
         }
@@ -149,6 +171,12 @@ void Game::ProcessInput(float dt)
         {
             this->State = GAME_PAUSE;
             this->Keys[GLFW_KEY_Z] = false;
+        }
+        if (this->Keys[GLFW_KEY_S]) //press s to skip level
+        {
+            this->sPress = true;
+            this->State = LEVEL_OVER;
+            this->Keys[GLFW_KEY_S] = false;
         }
     }
 
@@ -220,38 +248,72 @@ void Game::ProcessInput(float dt)
             Ball = new BallObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY, ResourceManager::GetTexture(ballNum));
 
             // load levels
-            GameLevel one; one.Load("levels/one.txt", this->Width, this->Height / 2, blocksNum, solidNum);
-            GameLevel two; two.Load("levels/two.txt", this->Width, this->Height / 2, blocksNum, solidNum);
-            GameLevel three; three.Load("levels/three.txt", this->Width, this->Height / 2, blocksNum, solidNum);
-            GameLevel four; four.Load("levels/four.txt", this->Width, this->Height / 2, blocksNum, solidNum);
-            this->Levels.push_back(two);
+            lvlGen a;
+            a.makeRand();
+            GameLevel one; one.Load("lvl1.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+            GameLevel two; two.Load("lvl2.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+            GameLevel three; three.Load("lvl3.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+            GameLevel four; four.Load("lvl4.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+            GameLevel win; four.Load("", this->Width, this->Height / 2, blocksNum, solidNum);
             this->Levels.push_back(one);
+            this->Levels.push_back(two);
             this->Levels.push_back(three);
-            this->Levels.push_back(four);
+            //this->Levels.push_back(four);
+            this->Levels.push_back(win);
             this->Level = 0;
+
+            menuPart = 1;
 
             this->State = GAME_ACTIVE;
         }
     }
+
+    //select input when game lost
+    if (this->State == GAME_LOSE || this->State == GAME_WIN) 
+    {
+        this->Levels.clear();
+        if (this->Keys[GLFW_KEY_Y]) {
+            lifeNum = 3;
+            life = std::to_string(lifeNum);
+            this->score = 0;
+            this->Level = 0;
+            this->Levels.clear();
+            this->State = GAME_START;
+        }
+    }
+
+
 }
 
+
+
+
+//--------------------------------------renders all game objects------------------------------------------------------------
 void Game::Render()
 {
+    //when game is booted
     if (this->State == GAME_START) 
     {
         // draw title (increasing denominator moves left, moves up)
-        Text->RenderText("Controls", this->Width / 2.5f, this->Height / 30.0f, 1.0f);
-        Text->RenderText("Z - pause game      space - serve ball", this->Width / 7.0f, this->Height / 10.0f, 1.0f);
-        Text->RenderText("Ultra Cool Hyperspace Breakout", this->Width / 5.0f, this->Height / 2.6f, 1.0f);
+        Text->RenderText("Controls", this->Width / 2.5f, this->Height / 30.0f, 0.7f);
+        Text->RenderText("Z - pause game      space - serve ball        S - skip level", this->Width / 9.0f, this->Height / 10.0f, 0.7f);
+        Text->RenderText("Randomized Breakout", this->Width / 9.5f, this->Height / 2.6f, 2.0f);
         Text->RenderText("(Press space to play)", this->Width / 3.4f, this->Height / 1.9f, 1.0f);
-        Text->RenderText("2024 Julian Lee and Adam Bowen", this->Width / 5.0f, this->Height / 1.1f, 1.0f);
+        Text->RenderText("2024 Julian Lee and Adam Bowen", this->Width / 3.4f, this->Height / 1.05f, 0.6f);
     }
 
-    if (this->State == GAME_ACTIVE || this->State == GAME_PAUSE)
+    //gameplay loop
+    if (this->State == GAME_ACTIVE || this->State == GAME_PAUSE || this->State == LEVEL_OVER)
     {
         // draw background
+        if (this->Level == 1) {
+            backgroundNum = "background2";
+        }
+        if (this->Level == 2) {
+            backgroundNum = "background3";
+        }
         Texture2D texture;
-        texture = ResourceManager::GetTexture("background");
+        texture = ResourceManager::GetTexture(backgroundNum);
         Renderer->DrawSprite(texture, glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f);
         // draw level
         this->Levels[this->Level].Draw(*Renderer);
@@ -260,11 +322,17 @@ void Game::Render()
         // draw ball
         Ball->Draw(*Renderer);
         // draw UI
-        Text->RenderText("Score", this->Width / 30.0f, this->Height / 30.0f, 1.0f);
-        Text->RenderText("Lives", this->Width / 1.2f + 10, this->Height / 30.0f, 1.0f);
-        Text->RenderText(life, this->Width / 1.2f + 100, this->Height / 30.0f, 1.0f);
+        Text->RenderText("Score", this->Width / 30.0f, this->Height / 30.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+        Text->RenderText(std::to_string(score), this->Width / 30.0f + 100, this->Height / 30.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+        Text->RenderText("Lives", this->Width / 1.2f + 10, this->Height / 30.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+        Text->RenderText(life, this->Width / 1.2f + 100, this->Height / 30.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+        if (this->State == LEVEL_OVER) {
+            Text->RenderText("Level finished!", this->Width / 3.5f, this->Height / 2.2f, 1.3f, glm::vec3(0.0f, 0.0f, 0.0f));
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
     }
 
+    //select game elements
     if (this->State == GAME_MENU) 
     {
         if (menuPart == 1) 
@@ -305,9 +373,34 @@ void Game::Render()
             Renderer->DrawSprite(block3, glm::vec2(this->Width / 1.35f + 20, this->Height / 2.0f), glm::vec2(20.0f * 4.0f, 20.0f * 4.0f), 0.0f);
         }
     }
+
+    // when game is won
+    if (this->State == GAME_WIN) 
+    {
+        Texture2D texture;
+        texture = ResourceManager::GetTexture("winner");
+        Renderer->DrawSprite(texture, glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f);
+        Text->RenderText("Congrats! You won!", this->Width / 4.5f, this->Height / 2.2f - 30, 1.5f, glm::vec3(0.0f, 0.0f, 0.0f));
+        Text->RenderText("Final Score   " + std::to_string(score), this->Width / 4.5f, this->Height / 1.9f - 30, 1.5f, glm::vec3(0.0f, 0.0f, 0.0f));
+        Text->RenderText("Play again? (Y/N)", this->Width / 4.5f, this->Height / 1.6f - 30, 1.5f, glm::vec3(0.0f, 0.0f, 0.0f));
+        if (sPress) {
+            Text->RenderText("Dont skip next time", this->Width / 4.0f, this->Height / 1.1f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        }
+    }
+
+    //when game is lost
+    if (this->State == GAME_LOSE) 
+    {
+        Text->RenderText("Out of lives", this->Width / 3.5f, this->Height / 2.8f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        Text->RenderText("Final Score   " + std::to_string(score), this->Width / 3.5f, this->Height / 2.2f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        Text->RenderText("Continue? (Y/N)", this->Width / 3.5f, this->Height / 1.7f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    }
 }
 
-// collision detection
+
+
+
+//------------------------------------------------------collision detection----------------------------------------------------
 bool CheckCollision(GameObject& one, GameObject& two);
 Collision CheckCollision(BallObject& one, GameObject& two);
 Direction VectorDirection(glm::vec2 closest);
@@ -330,12 +423,16 @@ void Game::DoCollisions()
     {
         if (!box.Destroyed)
         {
-            Collision collision = CheckCollision(*Ball, box);
+            Collision collision = CheckCollision(*Ball, box); //check if ball hits block
             if (std::get<0>(collision)) // if collision is true
             {
-                // destroy block if not solid
-                if (!box.IsSolid)
+                // destroy block if not solid and increase score
+                if (!box.IsSolid) 
+                {
                     box.Destroyed = true;
+                    score++;
+                    this->Levels[this->Level].bricksLeft--;
+                }
                 // collision resolution
                 Direction dir = std::get<1>(collision);
                 glm::vec2 diff_vector = std::get<2>(collision);
@@ -428,13 +525,13 @@ Direction VectorDirection(glm::vec2 target)
 void Game::ResetLevel()
 {
     if (this->Level == 0)
-        this->Levels[0].Load("levels/one.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+        this->Levels[0].Load("lvl1.txt", this->Width, this->Height / 2, blocksNum, solidNum);
     else if (this->Level == 1)
-        this->Levels[1].Load("levels/two.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+        this->Levels[1].Load("lvl2.txt", this->Width, this->Height / 2, blocksNum, solidNum);
     else if (this->Level == 2)
-        this->Levels[2].Load("levels/three.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+        this->Levels[2].Load("lvl3.txt", this->Width, this->Height / 2, blocksNum, solidNum);
     else if (this->Level == 3)
-        this->Levels[3].Load("levels/four.txt", this->Width, this->Height / 2, blocksNum, solidNum);
+        this->Levels[3].Load("lvl4.txt", this->Width, this->Height / 2, blocksNum, solidNum);
 }
 
 void Game::ResetPlayer()

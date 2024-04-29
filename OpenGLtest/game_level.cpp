@@ -1,11 +1,3 @@
-/*******************************************************************
-** This code is part of Breakout.
-**
-** Breakout is free software: you can redistribute it and/or modify
-** it under the terms of the CC BY 4.0 license as published by
-** Creative Commons, either version 4 of the License, or (at your
-** option) any later version.
-******************************************************************/
 #include "game_level.h"
 
 #include <fstream>
@@ -38,18 +30,13 @@ void GameLevel::Load(const char* file, unsigned int levelWidth, unsigned int lev
 
 void GameLevel::Draw(SpriteRenderer& renderer)
 {
-    for (GameObject& tile : this->Bricks)
+    for (GameObject& tile : this->Bricks) 
         if (!tile.Destroyed)
             tile.Draw(renderer);
+
 }
 
-bool GameLevel::IsCompleted()
-{
-    for (GameObject& tile : this->Bricks)
-        if (!tile.IsSolid && !tile.Destroyed)
-            return false;
-    return true;
-}
+
 
 void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned int levelWidth, unsigned int levelHeight, std::string block, std::string solid)
 {
@@ -73,6 +60,7 @@ void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned i
             }
             else if (tileData[y][x] > 1)	// non-solid; now determine its color based on level data
             {
+                bricksLeft++;
                 glm::vec3 color = glm::vec3(1.0f); // original: white
                 if (tileData[y][x] == 2)
                     color = glm::vec3(0.2f, 0.6f, 1.0f);
@@ -82,6 +70,14 @@ void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned i
                     color = glm::vec3(0.8f, 0.8f, 0.4f);
                 else if (tileData[y][x] == 5)
                     color = glm::vec3(1.0f, 0.5f, 0.0f);
+                else if (tileData[y][x] == 6)
+                    color = glm::vec3(0.3f, 0.5f, 0.7f);
+                else if (tileData[y][x] == 7)
+                    color = glm::vec3(0.7f, 0.1f, 0.2f);
+                else if (tileData[y][x] == 8)
+                    color = glm::vec3(0.0f, 1.0f, 1.0f);
+                else if (tileData[y][x] == 9)
+                    color = glm::vec3(1.0f, 0.0f, 1.0f);
 
                 glm::vec2 pos(unit_width * x, unit_height * y);
                 glm::vec2 size(unit_width, unit_height);

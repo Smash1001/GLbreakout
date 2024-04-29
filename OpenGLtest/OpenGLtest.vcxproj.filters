@@ -83,5 +83,8 @@
     <ClInclude Include="text_renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lvlGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

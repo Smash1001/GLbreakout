@@ -17,7 +17,9 @@ enum GameState {
     GAME_MENU,
     GAME_WIN,
     GAME_PAUSE,
-    GAME_START
+    GAME_START,
+    GAME_LOSE,
+    LEVEL_OVER
 };
 
 // Represents the four possible (collision) directions
@@ -55,6 +57,8 @@ public:
     unsigned int            Level;
     std::string             life = "3";
     unsigned int            lifeNum = 3;
+    unsigned int            score = 0;
+    bool                    sPress = false;
     // constructor/destructor
     Game(unsigned int width, unsigned int height);
     ~Game();
